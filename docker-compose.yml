@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  frontend:
+    image: todo-frontend
+    container_name: todo-frontend
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      target: runner
+    ports:
+      - "80:80"
+    env_file:
+      - ./front/.env.prod
+
+  backend:
+    image: todo-backend
+    container_name: todo-backend
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+      target: runner
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./back/src/.env.prod
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: todo-db
+    volumes:
+      - todo-db:/data/db
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./back/mongodb/.env
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: todo-mongo-express
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./back/mongo-express/.env
+    depends_on:
+      - mongodb
+
+volumes:
+  todo-db:
