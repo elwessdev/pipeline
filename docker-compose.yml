@@ -8,10 +8,12 @@ services:
       context: ./front
       dockerfile: Dockerfile
       target: runner
+      args:
+        VITE_API_URL: http://localhost:3000
     ports:
       - "80:80"
-    env_file:
-      - ./front/.env.prod
+    # env_file:
+    #   - ./front/.env.docker
 
   backend:
     image: todo-backend
@@ -23,27 +25,25 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./back/src/.env.prod
+      - ./back/.env.backend
     depends_on:
       - mongodb
 
   mongodb:
     image: mongo:latest
-    container_name: todo-db
+    container_name: todo-mongoDB
     volumes:
       - todo-db:/data/db
-    ports:
-      - "27017:27017"
     env_file:
-      - ./back/mongodb/.env
+      - ./back/.env.mongoDB
 
   mongo-express:
     image: mongo-express:latest
-    container_name: todo-mongo-express
+    container_name: todo-mongoExpress
     ports:
       - "8081:8081"
     env_file:
-      - ./back/mongo-express/.env
+      - ./back/.env.mongoExpress
     depends_on:
       - mongodb
 
